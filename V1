@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Comparativa Portugal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .calculator {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #0062BC;
+    }
+    input[type="number"], input[type="button"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    input[type="button"] {
+      background-color: #0062BC;
+      color: white;
+      cursor: pointer;
+    }
+    input[type="button"]:hover {
+      background-color: #004a8f;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #0062BC;
+      color: white;
+    }
+    .highlight {
+      color: #0062BC;
+      font-weight: bold;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h1>Calculadora Comparativa Portugal</h1>
+    <label for="price">Preço de divulgação (€):</label>
+    <input type="number" id="price" placeholder="Coloque o preço de divulgação">
+
+    <label for="commissionRate">Taxa de honorários sem IVA (%):</label>
+    <input type="number" id="commissionRate" placeholder="Exemplo: 5">
+
+    <label for="iadRate">Taxa de honorários iad sem IVA (%):</label>
+    <input type="number" id="iadRate" placeholder="Exemplo: 4">
+
+    <input type="button" value="Calcular Comparação" onclick="calculateComparison()">
+
+    <div class="result" id="result">
+      Os resultados aparecerão aqui.
+    </div>
+  </div>
+
+  <script>
+    function calculateComparison() {
+      // Recuperar os valores inseridos
+      const grossPrice = parseFloat(document.getElementById('price').value);
+      const commissionRate = parseFloat(document.getElementById('commissionRate').value) / 100;
+      const iadRate = parseFloat(document.getElementById('iadRate').value) / 100;
+      const taxRate = 0.23; // Taxa de IVA fixa em 23%
+
+      if (isNaN(grossPrice) || isNaN(commissionRate) || isNaN(iadRate)) {
+        document.getElementById('result').innerHTML = "Por favor, coloque valores válidos.";
+        return;
+      }
+
+      // Calcular a taxa total com IVA
+      const totalCommissionRate = commissionRate * (1 + taxRate);
+      const newTotalCommissionRate = iadRate * (1 + taxRate);
+
+      // Calcular o preço final para o vendedor (igual em ambos os cenários)
+      const netSeller = grossPrice / (1 + totalCommissionRate);
+
+      // Calcular os preços de difusão e os honorários
+      const initialHonorariosTTC = grossPrice - netSeller;
+      const newGrossPrice = netSeller * (1 + newTotalCommissionRate);
+      const newHonorariosTTC = newGrossPrice - netSeller;
+
+      // Calcular a poupança
+      const buyerSavings = grossPrice - newGrossPrice;
+
+      // Gerar a tabela comparativa
+      document.getElementById('result').innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Honorários Iniciais</th>
+              <th>Com IAD</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Preço final para do Vendedor</td>
+              <td>${netSeller.toFixed(2)} €</td>
+              <td>${netSeller.toFixed(2)} €</td>
+            </tr>
+            <tr>
+              <td>Montante dos Honorários com IVA</td>
+              <td>${initialHonorariosTTC.toFixed(2)} €</td>
+              <td>${newHonorariosTTC.toFixed(2)} €</td>
+            </tr>
+            <tr>
+              <td>Preço de Divulgação</td>
+              <td>${grossPrice.toFixed(2)} €</td>
+              <td>${newGrossPrice.toFixed(2)} €</td>
+            </tr>
+            <tr>
+              <td><span class="highlight">Poupança para o Comprador com iad*</span></td>
+              <td colspan="2"><span class="highlight">${buyerSavings.toFixed(2)} €</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note">* 80% dos imóveis na iad colocados à venda com o modelo FAIR PRICE são vendidos em menos de 3 meses se posicionados no preço de mercado.</p>
+      `;
+    }
+  </script>
+</body>
+</html>
